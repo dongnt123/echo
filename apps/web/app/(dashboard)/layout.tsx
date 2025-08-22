@@ -1,12 +1,9 @@
-import AuthGuard from "@/modules/auth/ui/components/auth-guard";
-import OrganizationGuard from "@/modules/auth/ui/components/organization-guard";
+import DashboardLayout from "@/modules/dashboard/ui/layouts/dashboard-layout";
 
-export default function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function DashboardMainLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <AuthGuard>
-      <OrganizationGuard>
-        {children}
-      </OrganizationGuard>
-    </AuthGuard>
+    <DashboardLayout>
+      {children}
+    </DashboardLayout>
   )
 }
