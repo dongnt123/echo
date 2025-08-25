@@ -8,6 +8,7 @@ import { Id } from "@workspace/backend/_generated/dataModel";
 // Basic state atoms
 export const screenAtom = atom<WidgetScreen>("loading");
 export const organizationIdAtom = atom<string | null>(null);
+export const conversationIdAtom = atom<Id<"conversations"> | null>(null);
 
 // Organization-scoped contact session atoms
 export const contactSessionIdAtomFamily = atomFamily((organizationId: string) => atomWithStorage<Id<"contactSessions"> | null>(`${CONTACT_SESSION_KEY}_${organizationId}`, null));
