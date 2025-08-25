@@ -22,7 +22,7 @@ const WidgetFooter = () => {
         className="h-14 flex-1 rounded-none"
         onClick={() => { }}
       >
-        <InboxIcon className={cn("size-5", screen === "inbox" && "text-primary")} />
+        <InboxIcon className={cn("size-5", false && "text-primary")} />
       </Button>
     </footer>
   )
