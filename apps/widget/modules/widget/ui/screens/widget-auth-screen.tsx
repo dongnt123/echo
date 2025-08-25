@@ -1,10 +1,12 @@
 import { useMutation } from "convex/react";
+import { useAtomValue, useSetAtom } from "jotai";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { api } from "@workspace/backend/_generated/api";
 import { Doc } from "@workspace/backend/_generated/dataModel";
+import { contactSessionIdAtomFamily, organizationIdAtom } from "../../atoms/widget-atoms";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@workspace/ui/components/form";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -14,9 +16,10 @@ const widgetAuthSchema = z.object({
   name: z.string().min(1, "Name is required!"),
   email: z.string().email("Invalid email address!")
 });
-const organizationId = "123";
 
 const WidgetAuthScreen = () => {
+  const organizationId = useAtomValue(organizationIdAtom);
+  const setContactSessionId = useSetAtom(contactSessionIdAtomFamily(organizationId || ""));
   const createContactSessions = useMutation(api.public.contactSessions.create)
   const form = useForm<z.infer<typeof widgetAuthSchema>>({
     resolver: zodResolver(widgetAuthSchema),
@@ -50,7 +53,7 @@ const WidgetAuthScreen = () => {
       metadata
     });
 
-    console.log({ contactSessionId });
+    setContactSessionId(contactSessionId);
   }
 
   return (

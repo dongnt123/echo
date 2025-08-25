@@ -6,7 +6,7 @@ export default defineSchema({
     name: v.string(),
     email: v.string(),
     organizationId: v.string(),
-    expiresAt: v.optional(v.number()),
+    expiresAt: v.number(),
     metadata: v.optional(v.object({
       userAgent: v.optional(v.string()),
       language: v.optional(v.string()),
