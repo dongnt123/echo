@@ -1,0 +1,1 @@
+export const DASHBOARD_CONVERSATIONS_FILTER_KEY = "echo-conversations-filter-key";

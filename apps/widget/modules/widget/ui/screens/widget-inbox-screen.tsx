@@ -27,7 +27,7 @@ const WidgetInboxScreen = () => {
   });
   const { topElementRef, handleLoadMore, canLoadMore, isLoadingMore } = useInfiniteScroll({
     status: conversations.status,
-    loadMore: conversations.loadMore,
+    loadMore: conversations.loadMore
   });
 
   return (
