@@ -10,14 +10,16 @@ import { ArrowLeftIcon, MenuIcon } from "lucide-react";
 
 import { api } from "@workspace/backend/_generated/api";
 import { contactSessionIdAtomFamily, conversationIdAtom, organizationIdAtom, screenAtom } from "../../atoms/widget-atoms";
+import { useInfiniteScroll } from "@workspace/ui/hooks/use-infinite-scroll";
 import { Button } from "@workspace/ui/components/button";
 import { AIConversation, AIConversationContent, AIConversationScrollButton } from "@workspace/ui/components/ai/conversation";
 import { AIInput, AIInputSubmit, AIInputTextarea, AIInputToolbar, AIInputTools } from "@workspace/ui/components/ai/input";
 import { AIMessage, AIMessageContent } from "@workspace/ui/components/ai/message";
 import { AIResponse } from "@workspace/ui/components/ai/response";
-import { AISuggestion, AISuggestions } from "@workspace/ui/components/ai/suggestion";
 import { Form, FormField } from "@workspace/ui/components/form";
 import WidgetHeader from "../components/widget-header";
+import InfiniteScrollTrigger from "@workspace/ui/components/shared/infinite-scroll-trigger";
+import DicebearAvatar from "@workspace/ui/components/shared/dicebear-avatar";
 
 const mesageSchema = z.object({
   message: z.string().min(1, "Message is required!")
@@ -39,7 +41,10 @@ const WidgetChatScreen = () => {
     contactSessionId
   } : "skip",
     { initialNumItems: 10 });
-
+  const { topElementRef, handleLoadMore, canLoadMore, isLoadingMore } = useInfiniteScroll({
+    status: messages.status,
+    loadMore: messages.loadMore,
+  });
   const createMessage = useAction(api.public.messages.create);
 
   const form = useForm<z.infer<typeof mesageSchema>>({
@@ -80,6 +85,12 @@ const WidgetChatScreen = () => {
       </WidgetHeader>
       <AIConversation>
         <AIConversationContent>
+          <InfiniteScrollTrigger
+            canLoadMore={canLoadMore}
+            isLoadingMore={isLoadingMore}
+            onLoadMore={handleLoadMore}
+            ref={topElementRef}
+          />
           {toUIMessages(messages.results ?? [])?.map((message) => (
             <AIMessage
               from={message.role === "user" ? "user" : "assistant"}
@@ -90,6 +101,13 @@ const WidgetChatScreen = () => {
                   {message.text}
                 </AIResponse>
               </AIMessageContent>
+              {message.role === "assistant" && (
+                <DicebearAvatar
+                  imageUrl="/logo.svg"
+                  seed="assistant"
+                  size={32}
+                />
+              )}
             </AIMessage>
           ))}
         </AIConversationContent>

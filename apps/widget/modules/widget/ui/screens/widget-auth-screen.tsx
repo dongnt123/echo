@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import { api } from "@workspace/backend/_generated/api";
 import { Doc } from "@workspace/backend/_generated/dataModel";
-import { contactSessionIdAtomFamily, organizationIdAtom } from "../../atoms/widget-atoms";
+import { contactSessionIdAtomFamily, organizationIdAtom, screenAtom } from "../../atoms/widget-atoms";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@workspace/ui/components/form";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -20,6 +20,7 @@ const widgetAuthSchema = z.object({
 const WidgetAuthScreen = () => {
   const organizationId = useAtomValue(organizationIdAtom);
   const setContactSessionId = useSetAtom(contactSessionIdAtomFamily(organizationId || ""));
+  const setScreen = useSetAtom(screenAtom);
   const createContactSessions = useMutation(api.public.contactSessions.create)
   const form = useForm<z.infer<typeof widgetAuthSchema>>({
     resolver: zodResolver(widgetAuthSchema),
@@ -54,6 +55,7 @@ const WidgetAuthScreen = () => {
     });
 
     setContactSessionId(contactSessionId);
+    setScreen("selection");
   }
 
   return (
