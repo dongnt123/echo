@@ -88,12 +88,10 @@ export const getMany = query({
     const conversationsWithLastMessage = await Promise.all(
       conversations.page.map(async (conversation) => {
         let lastMessage: MessageDoc | null = null;
-
         const messages = await supportAgent.listMessages(ctx, {
           threadId: conversation.threadId,
           paginationOpts: { numItems: 1, cursor: null }
         });
-
         if (messages.page.length > 0) lastMessage = messages.page[0] ?? null;
 
         return {

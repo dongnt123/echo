@@ -43,7 +43,7 @@ const WidgetChatScreen = () => {
     { initialNumItems: 10 });
   const { topElementRef, handleLoadMore, canLoadMore, isLoadingMore } = useInfiniteScroll({
     status: messages.status,
-    loadMore: messages.loadMore,
+    loadMore: messages.loadMore
   });
   const createMessage = useAction(api.public.messages.create);
 
