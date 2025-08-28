@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
+import { stepCountIs } from "@convex-dev/agent";
 
 import { action, query } from "../_generated/server";
 import { internal } from "../_generated/api";
@@ -44,7 +45,8 @@ export const create = action({
           tools: {
             escalateConversation,
             resolveConversation
-          }
+          },
+          stopWhen: stepCountIs(3)
         }
       );
     } else {

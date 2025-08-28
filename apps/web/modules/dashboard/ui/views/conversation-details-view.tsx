@@ -124,7 +124,9 @@ const ConversationDetailsView = ({ conversationId }: ConversationDetailsViewProp
             onLoadMore={handleLoadMore}
             ref={topElementRef}
           />
-          {toUIMessages(messages.results ?? [])?.map((message) => (
+          {toUIMessages(messages.results ?? [])
+            ?.filter((message) => message.text && message.text.trim() !== "")
+            ?.map((message) => (
             <AIMessage
               from={message.role === "user" ? "assistant" : "user"}
               key={message.id}
