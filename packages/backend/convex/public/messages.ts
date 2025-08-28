@@ -3,6 +3,8 @@ import { paginationOptsValidator } from "convex/server";
 
 import { action, query } from "../_generated/server";
 import { internal } from "../_generated/api";
+import { resolveConversation } from "../system/ai/tools/resolveConversation";
+import { escalateConversation } from "../system/ai/tools/escalateConversation";
 import supportAgent from "../system/ai/agents/supportAgent";
 
 export const create = action({
@@ -32,11 +34,25 @@ export const create = action({
       message: "Conversation already resolved"
     });
 
-    await supportAgent.generateText(
-      ctx,
-      { threadId: args.threadId },
-      { prompt: args.prompt }
-    )
+    const shouldTriggerAgent = conversation.status === "unresolved";
+    if (shouldTriggerAgent) {
+      await supportAgent.generateText(
+        ctx,
+        { threadId: args.threadId },
+        {
+          prompt: args.prompt,
+          tools: {
+            escalateConversation,
+            resolveConversation
+          }
+        }
+      );
+    } else {
+      await supportAgent.saveMessage(ctx, {
+        threadId: args.threadId,
+        prompt: args.prompt
+      });
+    }
   }
 });
 

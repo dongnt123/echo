@@ -2,7 +2,7 @@ import { ConvexError, v } from "convex/values";
 import { paginationOptsValidator, PaginationResult } from "convex/server";
 import { MessageDoc } from "@convex-dev/agent";
 
-import { query } from "../_generated/server";
+import { mutation, query } from "../_generated/server";
 import { Doc } from "../_generated/dataModel";
 import supportAgent from "../system/ai/agents/supportAgent";
 
@@ -107,5 +107,43 @@ export const getOne = query({
       ...conversation,
       contactSession
     };
+  }
+});
+
+export const updateStatus = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    status: v.optional(v.union(
+      v.literal("unresolved"),
+      v.literal("escalated"),
+      v.literal("resolved")
+    ))
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError({
+      code: "UNAUTHORIZED",
+      message: "Unauthorized"
+    });
+
+    const organizationId = identity.orgId as string;
+    if (!organizationId) throw new ConvexError({
+      code: "UNAUTHORIZED",
+      message: "Organization not found"
+    });
+
+    const conversation = await ctx.db.get(args.conversationId);
+    if (!conversation) throw new ConvexError({
+      code: "NOT_FOUND",
+      message: "Conversation not found"
+    });
+    if (conversation.organizationId !== organizationId) throw new ConvexError({
+      code: "FORBIDDEN",
+      message: "You are not allowed to access this conversation"
+    });
+
+    await ctx.db.patch(args.conversationId, {
+      status: args.status
+    });
   }
 });
