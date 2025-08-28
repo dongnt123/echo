@@ -62,7 +62,7 @@ const WidgetChatScreen = () => {
       threadId: conversation.threadId,
       prompt: values.message,
       contactSessionId
-    })
+    });
   }
 
   const handleBack = () => {
