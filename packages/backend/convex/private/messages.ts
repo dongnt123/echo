@@ -1,8 +1,11 @@
 import { ConvexError, v } from "convex/values";
 import { saveMessage } from "@convex-dev/agent";
 import { paginationOptsValidator } from "convex/server";
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
 
-import { mutation, query } from "../_generated/server";
+import { OPERATOR_MESSAGE_ENHANCEMENT_PROMPT } from "../../constants";
+import { action, mutation, query } from "../_generated/server";
 import { components } from "../_generated/api";
 import supportAgent from "../system/ai/agents/supportAgent";
 
@@ -85,5 +88,40 @@ export const getMany = query({
     });
 
     return paginated;
+  }
+});
+
+export const enhanceResponse = action({
+  args: {
+    prompt: v.string()
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError({
+      code: "UNAUTHORIZED",
+      message: "Unauthorized"
+    });
+
+    const organizationId = identity.orgId as string;
+    if (!organizationId) throw new ConvexError({
+      code: "UNAUTHORIZED",
+      message: "Organization not found"
+    });
+
+    const response = await generateText({
+      model: openai.chat("gpt-4o-mini"),
+      messages: [
+        {
+          role: "system",
+          content: OPERATOR_MESSAGE_ENHANCEMENT_PROMPT
+        },
+        {
+          role: "user",
+          content: args.prompt
+        }
+      ]
+    });
+
+    return response.text;
   }
 });
